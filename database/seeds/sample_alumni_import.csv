@@ -1,0 +1,5 @@
+full_name,graduation_year,degree,department,company,job_title,industry,location,linkedin_url,skills
+Siddharth Varma,2021,MCA (Integrated 5 Year),Department of Computer Applications,Uber,Staff Backend Engineer,Ride Hailing & Mobility,Bengaluru,https://linkedin.com/in/demo-siddharth-varma,"C++,Distributed Systems,Go"
+Meera Nambiar,2022,M.Tech (Information Technology),Department of Computer Applications,NVIDIA,Deep Learning Solutions Architect,Semiconductors & AI,Pune,https://linkedin.com/in/demo-meera-nambiar,"Machine Learning & Python,C++,CUDA"
+Rahul Saxena,2020,MBA (Management Science),Department of Management Studies,McKinsey & Company,Management Consultant,Strategy Consulting,Gurugram,https://linkedin.com/in/demo-rahul-saxena,"Product Management,Brand Strategy,Financial Modeling"
+Tanvi Kulkarni,2022,BCA,Department of Computer Applications,Spotify,Software Engineer - Audio Engine,Digital Media & Streaming,Remote,https://linkedin.com/in/demo-tanvi-kulkarni,"C++,React & JavaScript,System Design"

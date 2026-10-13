@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: alumniverse_postgres
+    environment:
+      POSTGRES_DB: alumniverse_db
+      POSTGRES_USER: alumniverse_user
+      POSTGRES_PASSWORD: alumniverse_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./database/seeds/001_seed_data.sql:/docker-entrypoint-initdb.d/02_seeds.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alumniverse_user -d alumniverse_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend-cpp
+      dockerfile: Dockerfile
+    container_name: alumniverse_backend
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://alumniverse_user:alumniverse_password_2026@postgres:5432/alumniverse_db
+      JWT_SECRET: alumniverse_jwt_production_secret_key_2026
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: alumniverse_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
