@@ -27,6 +27,7 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libstdc++6 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -41,6 +42,6 @@ ENV JWT_SECRET="alumniverse_production_jwt_secret_key_2026"
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD ["/app/alumniverse_backend", "--health-check"] || exit 0
+  CMD curl -f http://localhost:8080/health || exit 1
 
 CMD ["/app/alumniverse_backend"]

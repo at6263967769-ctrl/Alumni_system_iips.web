@@ -1,25 +1,21 @@
 # Render Blueprint Specification for AlumniVerse
 services:
-  # 1. C++ Crow Backend Web Service
+  # 1. C++ Crow Backend Web Service (Free Tier)
   - type: web
     name: alumniverse-backend-cpp
     env: docker
     dockerfilePath: backend-cpp/Dockerfile
     dockerContext: backend-cpp
-    plan: standard
+    plan: free
     region: oregon
     healthCheckPath: /health
     envVars:
       - key: PORT
         value: 8080
-      - key: DATABASE_URL
-        fromDatabase:
-          name: alumniverse-postgres
-          property: connectionString
       - key: JWT_SECRET
         generateValue: true
 
-  # 2. React Vite Frontend Static Site
+  # 2. React Vite Frontend Static Site (100% Free)
   - type: static_site
     name: alumniverse-frontend
     buildCommand: npm install && npm run build
@@ -33,11 +29,3 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://alumniverse-backend-cpp.onrender.com/api/v1
-
-databases:
-  # 3. Managed PostgreSQL Database
-  - name: alumniverse-postgres
-    databaseName: alumniverse_db
-    user: alumniverse_admin
-    plan: standard
-    region: oregon
