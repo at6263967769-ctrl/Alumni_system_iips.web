@@ -4,8 +4,8 @@ services:
   - type: web
     name: alumniverse-backend-cpp
     env: docker
-    dockerfilePath: backend-cpp/Dockerfile
-    dockerContext: backend-cpp
+    dockerfilePath: Dockerfile
+    dockerContext: .
     plan: free
     region: oregon
     healthCheckPath: /health
