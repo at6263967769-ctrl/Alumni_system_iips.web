@@ -4,28 +4,31 @@ import apiClient from '../api/client';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('alumniverse_token'));
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('alumniverse_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+      if (!token) return;
       try {
         const res = await apiClient.getMe();
         if (res.status === 'success') {
           setUser(res.data);
-        } else {
+          localStorage.setItem('alumniverse_user', JSON.stringify(res.data));
+        } else if (res.code === 401) {
           logout();
         }
       } catch (err) {
-        console.warn('Token validation failed:', err.message);
-        logout();
-      } finally {
-        setLoading(false);
+        console.warn('Silent token verification note:', err.message);
+        // Do NOT log out on network error; maintain user session from localStorage
       }
     };
     fetchUser();
@@ -36,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     if (res.status === 'success') {
       const { token: newToken, user: newUser } = res.data;
       localStorage.setItem('alumniverse_token', newToken);
+      localStorage.setItem('alumniverse_user', JSON.stringify(newUser));
       setToken(newToken);
       setUser(newUser);
       return newUser;
@@ -48,6 +52,7 @@ export const AuthProvider = ({ children }) => {
     if (res.status === 'success') {
       const { token: newToken, user: newUser } = res.data;
       localStorage.setItem('alumniverse_token', newToken);
+      localStorage.setItem('alumniverse_user', JSON.stringify(newUser));
       setToken(newToken);
       setUser(newUser);
       return newUser;
@@ -57,6 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('alumniverse_token');
+    localStorage.removeItem('alumniverse_user');
     setToken(null);
     setUser(null);
   };
