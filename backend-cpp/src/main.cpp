@@ -137,6 +137,17 @@ int main() {
         return successResponse(healthData);
     };
 
+    CROW_ROUTE(app, "/").methods("GET"_method)([](const crow::request& req) {
+        nlohmann::json info = {
+            {"status", "online"},
+            {"service", "AlumniVerse C++ Crow Backend Engine"},
+            {"version", "1.0.0"},
+            {"health_endpoint", "/health"},
+            {"api_base", "/api/v1"}
+        };
+        return successResponse(info);
+    });
+
     CROW_ROUTE(app, "/health").methods("GET"_method)(handleHealth);
     CROW_ROUTE(app, "/api/v1/health").methods("GET"_method)(handleHealth);
 
