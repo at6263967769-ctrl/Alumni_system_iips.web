@@ -32,6 +32,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Copy GCC 13 runtime libraries from builder to guarantee GLIBCXX compatibility
+COPY --from=builder /usr/local/lib64/libstdc++.so.6* /usr/local/lib64/
+ENV LD_LIBRARY_PATH="/usr/local/lib64:${LD_LIBRARY_PATH}"
+RUN ldconfig
+
 # Copy compiled backend binary from builder
 COPY --from=builder /app/build/alumniverse_backend /app/alumniverse_backend
 
