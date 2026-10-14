@@ -104,21 +104,39 @@ int main() {
     auto graphService = std::make_shared<GraphService>(repo);
     auto treeService = std::make_shared<TreeService>(repo);
 
-    crow::SimpleApp app;
+    crow::App<crow::CORSHandler> app;
+    auto& cors = app.get_middleware<crow::CORSHandler>();
+    cors.global()
+        .origin("*")
+        .methods("POST"_method, "GET"_method, "PUT"_method, "DELETE"_method, "OPTIONS"_method)
+        .headers("Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin");
 
-    // OPTIONS preflight handler for CORS
+    auto makeOptionsResponse = []() {
+        crow::response res(204);
+        setCorsHeaders(res);
+        return res;
+    };
+
+    // Explicit and catch-all OPTIONS preflight handlers for CORS
     CROW_ROUTE(app, "/<path>").methods("OPTIONS"_method)
-    ([](const crow::request& req, const std::string& path) {
-        crow::response res(204);
-        setCorsHeaders(res);
-        return res;
+    ([&makeOptionsResponse](const crow::request&, const std::string&) {
+        return makeOptionsResponse();
     });
-
     CROW_ROUTE(app, "/api/v1/<path>").methods("OPTIONS"_method)
-    ([](const crow::request& req, const std::string& path) {
-        crow::response res(204);
-        setCorsHeaders(res);
-        return res;
+    ([&makeOptionsResponse](const crow::request&, const std::string&) {
+        return makeOptionsResponse();
+    });
+    CROW_ROUTE(app, "/api/v1/<path>/<path>").methods("OPTIONS"_method)
+    ([&makeOptionsResponse](const crow::request&, const std::string&, const std::string&) {
+        return makeOptionsResponse();
+    });
+    CROW_ROUTE(app, "/api/v1/<path>/<path>/<path>").methods("OPTIONS"_method)
+    ([&makeOptionsResponse](const crow::request&, const std::string&, const std::string&, const std::string&) {
+        return makeOptionsResponse();
+    });
+    CROW_ROUTE(app, "/api/v1/<path>/<path>/<path>/<path>").methods("OPTIONS"_method)
+    ([&makeOptionsResponse](const crow::request&, const std::string&, const std::string&, const std::string&, const std::string&) {
+        return makeOptionsResponse();
     });
 
     // -------------------------------------------------------------
