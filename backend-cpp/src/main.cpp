@@ -112,7 +112,7 @@ int main() {
         .headers("Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin");
 
     auto makeOptionsResponse = []() {
-        crow::response res(204);
+        crow::response res(200);
         setCorsHeaders(res);
         return res;
     };

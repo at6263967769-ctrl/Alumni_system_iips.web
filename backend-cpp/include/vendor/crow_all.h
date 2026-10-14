@@ -9496,7 +9496,7 @@ namespace crow
                 buffers_.emplace_back(crlf.data(), crlf.size());
             }
 
-            if (!res.manual_length_header && !res.headers.count("content-length"))
+            if (res.code != 204 && res.code != 304 && (res.code < 100 || res.code >= 200) && !res.manual_length_header && !res.headers.count("content-length"))
             {
                 content_length_ = std::to_string(res.body.size());
                 static std::string content_length_tag = "Content-Length: ";
@@ -13137,7 +13137,7 @@ namespace crow // NOTE: Already documented in "crow/app.h"
                         }
                     }
                     allow = allow.substr(0, allow.size() - 2);
-                    res = response(204);
+                    res = response(200);
                     res.set_header("Allow", allow);
                     res.end();
                     found->method = method_actual;
@@ -13161,7 +13161,7 @@ namespace crow // NOTE: Already documented in "crow/app.h"
                     if (rules_matched)
                     {
                         allow = allow.substr(0, allow.size() - 2);
-                        res = response(204);
+                        res = response(200);
                         res.set_header("Allow", allow);
                         res.end();
                         found->method = method_actual;
