@@ -22,7 +22,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    const errorMsg = error.response?.data?.message || error.message || 'An unexpected API error occurred.';
+    let errorMsg = error.response?.data?.message || error.message || 'An unexpected API error occurred.';
+    if (error.message === 'Network Error' || !error.response) {
+      errorMsg = `Network Error: Cannot reach Backend API at [${API_BASE_URL}]. Please verify backend service URL in Render Environment settings.`;
+    }
     return Promise.reject(new Error(errorMsg));
   }
 );

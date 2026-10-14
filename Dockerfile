@@ -14,9 +14,9 @@ WORKDIR /app
 # Copy backend source code from backend-cpp
 COPY backend-cpp/ .
 
-# Build with CMake and Ninja
+# Build with CMake and Ninja (-j 1 prevents OOM on Render 512MB RAM free tier)
 RUN cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-RUN ninja -C build alumniverse_backend graph_tests
+RUN ninja -j 1 -C build alumniverse_backend graph_tests
 
 # Run unit tests during container build
 RUN ./build/graph_tests
@@ -46,7 +46,7 @@ ENV JWT_SECRET="alumniverse_production_jwt_secret_key_2026"
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD sh -c "curl -f http://localhost:\${PORT:-8080}/health || exit 1"
 
 CMD ["/app/alumniverse_backend"]
