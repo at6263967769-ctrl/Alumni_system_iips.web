@@ -13137,7 +13137,8 @@ namespace crow // NOTE: Already documented in "crow/app.h"
                         }
                     }
                     allow = allow.substr(0, allow.size() - 2);
-                    res = response(200);
+                    res = response(200, "{\"status\":\"ok\"}");
+                    res.set_header("Content-Type", "application/json");
                     res.set_header("Allow", allow);
                     res.end();
                     found->method = method_actual;
@@ -13161,7 +13162,8 @@ namespace crow // NOTE: Already documented in "crow/app.h"
                     if (rules_matched)
                     {
                         allow = allow.substr(0, allow.size() - 2);
-                        res = response(200);
+                        res = response(200, "{\"status\":\"ok\"}");
+                        res.set_header("Content-Type", "application/json");
                         res.set_header("Allow", allow);
                         res.end();
                         found->method = method_actual;
