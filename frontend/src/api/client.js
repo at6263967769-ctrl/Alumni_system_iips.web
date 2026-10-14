@@ -5,14 +5,23 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'text/plain',
   },
+  transformRequest: [(data) => {
+    if (data && typeof data === 'object') {
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
 });
 
-// Attach Authorization Bearer token if present in localStorage
+// Attach Authorization Bearer token only when needed to prevent CORS preflight on read/auth routes
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('alumniverse_token');
-  if (token) {
+  const isPublicRead = config.method === 'get' && !config.url?.includes('/auth/me') && !config.url?.includes('/admin/');
+  const isLoginOrRegister = config.url?.includes('/auth/login') || config.url?.includes('/auth/register');
+
+  if (token && !isPublicRead && !isLoginOrRegister) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
